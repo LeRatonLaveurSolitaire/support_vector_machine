@@ -80,11 +80,27 @@ def main():
     classifier = SVC(kernel="rbf", probability=True)
     classifier = classifier.fit(X, Y)
 
-
     plot_data_hyperplan(X, Y, classifier, "Graph_SVM_non_lineaire_with_proba", show_probability=True,save=False)
     
     plot_data_hyperplan(X, Y, classifier, "Graph_SVM_non_lineaire_without_proba", show_probability=False,save=False)
 
+    # Définir le modèle et les hyperparamètres à tester
+    model = SVC()
+    param_grid = {
+        'C': [0.1, 1, 10, 100],         # Paramètre de régularisation
+        'gamma': [1, 0.1, 0.01, 0.001], # Paramètre du noyau RBF
+        'kernel': ['rbf']               # Type de noyau
+    }
+
+    # Configuration de GridSearchCV
+    grid_search = GridSearchCV(estimator=model, param_grid=param_grid, cv=5, scoring='accuracy', n_jobs=-1, verbose=2)
+
+    # Recherche des meilleurs hyperparamètres
+    grid_search.fit(X, Y)
+
+    # Afficher les résultats
+    print("Meilleurs paramètres :", grid_search.best_params_)
+    print("Meilleure précision :", grid_search.best_score_)
 
 if __name__ == "__main__":
     main()
