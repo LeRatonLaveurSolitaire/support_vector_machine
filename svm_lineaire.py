@@ -66,9 +66,12 @@ def main():
     w = classifier.coef_[0]
     b = classifier.intercept_[0]
 
-    plot_data_hyperplan(X, Y, classifier, "Graph_SVM_lineaire_with_proba", show_probability=True,save=True)
+    print(f"{w=}")
+    print(f"{b=}")
+
+    plot_data_hyperplan(X, Y, classifier, "Graph_SVM_lineaire_with_proba", show_probability=True,save=False)
     
-    plot_data_hyperplan(X, Y, classifier, "Graph_SVM_lineaire_without_proba", show_probability=False,save=True)
+    plot_data_hyperplan(X, Y, classifier, "Graph_SVM_lineaire_without_proba", show_probability=False,save=False)
 
 
 if __name__ == "__main__":
