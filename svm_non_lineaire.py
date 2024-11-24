@@ -86,9 +86,23 @@ def main():
 
     # Définir le modèle et les hyperparamètres à tester
     model = SVC()
+
+    # Partie 1 : Les nombres de 1 à 10
+    part1 = list(range(1, 11))
+
+    # Partie 2 : Les multiples de puissances de 10 (10, 20, ..., 90, 100, 200, ...)
+    part2 = []
+    for power in range(1, 4):  # On peut ajuster la plage selon les besoins
+        part2.extend([i * (10 ** power) for i in range(-3, 4)])
+
+    # Fusionner les deux parties
+    result = part1 + part2
+
+    print(result)
+
     param_grid = {
-        'C': [0.1, 1, 10, 100],         # Paramètre de régularisation
-        'gamma': [1, 0.1, 0.01, 0.001], # Paramètre du noyau RBF
+        'C': result,         # Paramètre de régularisation
+        'gamma': result,        # Paramètre du noyau RBF
         'kernel': ['rbf']               # Type de noyau
     }
 
