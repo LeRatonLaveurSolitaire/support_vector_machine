@@ -77,12 +77,27 @@ def plot_data_hyperplan(X, Y, classifier, title, show_probability=False,save=Fal
 
 def main():
     X, Y = genere_ex_2()
+
+    # Affichage des données
+    title="Training data non linéairement séparable"
+    x_min, x_max = X[:, 0].min() - 1, X[:, 0].max() + 1
+    y_min, y_max = X[:, 1].min() - 1, X[:, 1].max() + 1
+    plt.xlim(x_min, x_max)
+    plt.ylim(y_min, y_max)
+    plt.xlabel('x1')
+    plt.ylabel('x2')
+    plt.title(title)
+    plt.plot(X[:, 0], X[:, 1],'ko')
+    plt.savefig(f'plots/{title}.pdf')
+    plt.show()
+
+
     classifier = SVC(kernel="rbf", probability=True)
     classifier = classifier.fit(X, Y)
 
-    plot_data_hyperplan(X, Y, classifier, "Graph_SVM_non_lineaire_with_proba", show_probability=True,save=False)
+    plot_data_hyperplan(X, Y, classifier, "Graph_SVM_non_lineaire_with_proba", show_probability=True,save=True)
     
-    plot_data_hyperplan(X, Y, classifier, "Graph_SVM_non_lineaire_without_proba", show_probability=False,save=False)
+    plot_data_hyperplan(X, Y, classifier, "Graph_SVM_non_lineaire_without_proba", show_probability=False,save=True)
 
     # Définir le modèle et les hyperparamètres à tester
     model = SVC()

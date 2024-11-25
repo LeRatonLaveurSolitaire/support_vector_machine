@@ -60,6 +60,20 @@ def plot_data_hyperplan(X, Y, classifier, title, show_probability=False, save=Fa
 
 def main():
     X, Y = genere_ex_1()
+
+    # Affichage des données
+    title="Training data"
+    x_min, x_max = X[:, 0].min() - 1, X[:, 0].max() + 1
+    y_min, y_max = X[:, 1].min() - 1, X[:, 1].max() + 1
+    plt.xlim(x_min, x_max)
+    plt.ylim(y_min, y_max)
+    plt.xlabel('x1')
+    plt.ylabel('x2')
+    plt.title(title)
+    plt.plot(X[:, 0], X[:, 1],'ko')
+    plt.savefig(f'plots/{title}.pdf')
+    plt.show()
+
     classifier = SVC(kernel="linear", probability=True)
     classifier = classifier.fit(X, Y)
 
