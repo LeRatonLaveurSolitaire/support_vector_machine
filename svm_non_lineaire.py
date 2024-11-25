@@ -47,7 +47,6 @@ def plot_data_hyperplan(X, Y, classifier, title, show_probability=False,save=Fal
     # Add legend
     legend1 = plt.legend(*scatter.legend_elements(),
                          loc="upper right", title="Classes")
-    #plt.add_artist(legend1)
 
     plt.xlabel('x1')
     plt.ylabel('x2')
@@ -55,20 +54,65 @@ def plot_data_hyperplan(X, Y, classifier, title, show_probability=False,save=Fal
     plt.xlim(x_min, x_max)
     plt.ylim(y_min, y_max)
     if save:
-        plt.savefig(f'plots/{title}.png')
+        plt.savefig(f'plots/{title}.pdf')
     plt.show()
     plt.close()
 
 def main():
     X, Y = genere_ex_2()
+
+    # Affichage des données
+    title="Training data non linéairement séparable"
+    x_min, x_max = X[:, 0].min() - 1, X[:, 0].max() + 1
+    y_min, y_max = X[:, 1].min() - 1, X[:, 1].max() + 1
+    plt.xlim(x_min, x_max)
+    plt.ylim(y_min, y_max)
+    plt.xlabel('x1')
+    plt.ylabel('x2')
+    plt.title(title)
+    plt.plot(X[:, 0], X[:, 1],'ko')
+    plt.savefig(f'plots/{title}.pdf')
+    plt.show()
+
+
     classifier = SVC(kernel="rbf", probability=True)
     classifier = classifier.fit(X, Y)
 
-
-    plot_data_hyperplan(X, Y, classifier, "Graph_SVM_non_lineaire_with_proba", show_probability=True,save=True)
+    plot_data_hyperplan(X, Y, classifier, "Graph_SVM_non_lineaire_with_proba", show_probability=True,save=False)
     
-    plot_data_hyperplan(X, Y, classifier, "Graph_SVM_non_lineaire_without_proba", show_probability=False,save=True)
+    plot_data_hyperplan(X, Y, classifier, "Graph_SVM_non_lineaire_without_proba", show_probability=False,save=False)
 
+    # Définir le modèle et les hyperparamètres à tester
+    model = SVC()
+
+    # Partie 1 : Les nombres de 1 à 10
+    part1 = list(range(1, 11))
+
+    # Partie 2 : Les multiples de puissances de 10 (10, 20, ..., 90, 100, 200, ...)
+    part2 = []
+    for power in range(1, 4):  # On peut ajuster la plage selon les besoins
+        part2.extend([i * (10 ** power) for i in range(-3, 4)])
+
+    # Fusionner les deux parties
+    result = part1 + part2
+
+    print(result)
+
+    param_grid = {
+        'C': result,         # Paramètre de régularisation
+        'gamma': result,        # Paramètre du noyau RBF
+        'kernel': ['rbf']               # Type de noyau
+    }
+
+    # Configuration de GridSearchCV
+    grid_search = GridSearchCV(estimator=model, param_grid=param_grid, cv=5, scoring='accuracy', n_jobs=-1, verbose=2)
+
+    # Recherche des meilleurs hyperparamètres
+    grid_search.fit(X, Y)
+
+    # Afficher les résultats
+    print("Meilleurs paramètres :", grid_search.best_params_)
+    print("Meilleure précision :", grid_search.best_score_)
 
 if __name__ == "__main__":
     main()
