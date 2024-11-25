@@ -71,41 +71,45 @@ def main():
     plt.ylabel('x2')
     plt.title(title)
     plt.plot(X[:, 0], X[:, 1],'ko')
-    plt.savefig(f'plots/{title}.pdf')
-    plt.show()
+    #plt.savefig(f'plots/{title}.pdf')
+    #plt.show()
 
 
-    classifier = SVC(kernel="rbf", probability=True)
-    classifier = classifier.fit(X, Y)
+    #classifier = SVC(kernel="rbf", probability=True)
+    #classifier = classifier.fit(X, Y)
 
-    plot_data_hyperplan(X, Y, classifier, "Graph_SVM_non_lineaire_with_proba", show_probability=True,save=False)
+    #plot_data_hyperplan(X, Y, classifier, "Graph_SVM_non_lineaire_with_proba", show_probability=True,save=False)
     
-    plot_data_hyperplan(X, Y, classifier, "Graph_SVM_non_lineaire_without_proba", show_probability=False,save=False)
+    #plot_data_hyperplan(X, Y, classifier, "Graph_SVM_non_lineaire_without_proba", show_probability=False,save=False)
 
     # Définir le modèle et les hyperparamètres à tester
     model = SVC()
 
-    # Partie 1 : Les nombres de 1 à 10
-    part1 = list(range(1, 11))
+    # Partie 1 : Les nombres de 1 à 6
+    part1 = list(range(1, 7))
 
     # Partie 2 : Les multiples de puissances de 10 (10, 20, ..., 90, 100, 200, ...)
     part2 = []
-    for power in range(1, 4):  # On peut ajuster la plage selon les besoins
-        part2.extend([i * (10 ** power) for i in range(-3, 4)])
+    for power in range(-2, 2):  # On peut ajuster la plage selon les besoins
+        part2.append( 10 ** power)
+
+
 
     # Fusionner les deux parties
-    result = part1 + part2
+    result = part1 + part2 #+ list(np.logspace(-2,1))
 
-    print(result)
+    print(f"{result=}")
 
     param_grid = {
         'C': result,         # Paramètre de régularisation
-        'gamma': result,        # Paramètre du noyau RBF
-        'kernel': ['rbf']               # Type de noyau
+        'degree': part1,        # Paramètre du noyau RBF
+        'coef0' : part1 + part2,
+        'kernel': ['poly'],               # Type de noyau
+        'probability' : [True],
     }
 
     # Configuration de GridSearchCV
-    grid_search = GridSearchCV(estimator=model, param_grid=param_grid, cv=5, scoring='accuracy', n_jobs=-1, verbose=2)
+    grid_search = GridSearchCV(estimator=model, param_grid=param_grid, cv=5, scoring='precision', n_jobs=-1, verbose=2)
 
     # Recherche des meilleurs hyperparamètres
     grid_search.fit(X, Y)
@@ -113,6 +117,18 @@ def main():
     # Afficher les résultats
     print("Meilleurs paramètres :", grid_search.best_params_)
     print("Meilleure précision :", grid_search.best_score_)
+
+
+    classifier = SVC(**grid_search.best_params_).fit(X,Y)
+
+    print(f'{classifier.coef0=}')
+    print(f'{classifier.class_weight=}')
+    print(f'{classifier.dual_coef_=}')
+    print(f'{classifier.support_vectors_=}')
+    print(f'{classifier.get_params()=}')
+
+    plot_data_hyperplan(X, Y, classifier, "Graph_SVM_best_poly_non_lineaire_with_proba", show_probability=True,save=True)
+    plot_data_hyperplan(X, Y, classifier, "Graph_SVM-best_poly_non_lineaire_without_proba", show_probability=False,save=True)
 
 if __name__ == "__main__":
     main()
