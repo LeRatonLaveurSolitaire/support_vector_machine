@@ -27,9 +27,6 @@ def plot_data_hyperplan(X, Y, classifier, title, show_probability=False,save=Fal
 
     plt.figure(figsize=(10, 8))
 
-    # Determine if the kernel is linear
-    is_linear = classifier.kernel == 'linear'
-
     if show_probability:
         # Plot the probability gradient
         Z = classifier.predict_proba(np.c_[xx.ravel(), yy.ravel()])[:, 1]
@@ -39,26 +36,13 @@ def plot_data_hyperplan(X, Y, classifier, title, show_probability=False,save=Fal
 
     Z = classifier.decision_function(np.c_[xx.ravel(), yy.ravel()])
     Z = Z.reshape(xx.shape)
-    cs = plt.contour(xx, yy, Z, levels=[-1, 0, 1], alpha=0.5,
-                          colors=['#FFAAAA', '#AAAAFF', '#AAFFAA'])
 
     # Plot the hyperplane
-    if is_linear:
-        w = classifier.coef_[0]
-        a = -w[0] / w[1]
-        xx = np.linspace(x_min, x_max)
-        yy = a * xx - (classifier.intercept_[0]) / w[1]
-        plt.plot(xx, yy, 'k-')
-    else:
-        plt.contour(xx, yy, Z, colors='k', levels=[0], alpha=0.5, linestyles=['-'])
+
+    plt.contour(xx, yy, Z, colors=['red', 'black', 'blue'], levels=[-1, 0, 1], alpha=1, linestyles=['-', '-', '-'])
 
     # Plot the training points
     scatter = plt.scatter(X[:, 0], X[:, 1], c=Y, cmap=plt.cm.RdYlBu, edgecolor='black')
-
-    # Plot the support vectors
-    plt.scatter(classifier.support_vectors_[:, 0], classifier.support_vectors_[:, 1],
-                s=100, facecolors='none', edgecolors='k', alpha=0.5)
-
 
     # Add legend
     legend1 = plt.legend(*scatter.legend_elements(),
@@ -71,7 +55,7 @@ def plot_data_hyperplan(X, Y, classifier, title, show_probability=False,save=Fal
     plt.xlim(x_min, x_max)
     plt.ylim(y_min, y_max)
     if save:
-        plt.savefig(f'plots/{title}.pdf')
+        plt.savefig(f'plots/{title}.png')
     plt.show()
     plt.close()
 
@@ -81,9 +65,9 @@ def main():
     classifier = classifier.fit(X, Y)
 
 
-    plot_data_hyperplan(X, Y, classifier, "Graph_SVM_non_lineaire_with_proba", show_probability=True,save=False)
+    plot_data_hyperplan(X, Y, classifier, "Graph_SVM_non_lineaire_with_proba", show_probability=True,save=True)
     
-    plot_data_hyperplan(X, Y, classifier, "Graph_SVM_non_lineaire_without_proba", show_probability=False,save=False)
+    plot_data_hyperplan(X, Y, classifier, "Graph_SVM_non_lineaire_without_proba", show_probability=False,save=True)
 
 
 if __name__ == "__main__":

@@ -14,39 +14,36 @@ def genere_ex_1(n1=100, n2=50, mu1=[0, 3], mu2=[3, 0], sd1=0.15, sd2=0.2):
     return X, Y
 
 
-def plot_data_hyperplan(X, Y, classifier, title, show_probability=False, save=False):
+def plot_data_hyperplan(X, Y, classifier, title, show_probability=False,save=False):
     # Create a mesh to plot in
     x_min, x_max = X[:, 0].min() - 1, X[:, 0].max() + 1
     y_min, y_max = X[:, 1].min() - 1, X[:, 1].max() + 1
     xx, yy = np.meshgrid(np.arange(x_min, x_max, 0.02),
                          np.arange(y_min, y_max, 0.02))
 
-    # Plot the decision boundary
+    plt.figure(figsize=(10, 8))
+
     if show_probability:
         # Plot the probability gradient
         Z = classifier.predict_proba(np.c_[xx.ravel(), yy.ravel()])[:, 1]
         Z = Z.reshape(xx.shape)
-        plt.contourf(xx, yy, Z, levels=np.linspace(0, 1, 11), cmap=plt.cm.RdYlBu, alpha=0.8)
-        plt.colorbar(label='Probability')
-    # else:
+        cs = plt.contourf(xx, yy, Z, levels=np.linspace(0, 1, 11), cmap=plt.cm.RdYlBu, alpha=0.8)
+        plt.colorbar(cs, label='Probability')
+
     Z = classifier.decision_function(np.c_[xx.ravel(), yy.ravel()])
     Z = Z.reshape(xx.shape)
 
-
-    #plt.figure(figsize=(10, 8))
-    plt.contourf(xx, yy, Z, levels=[-1, 0, 1], alpha=0.5,
-                colors=['#FFAAAA', '#AAAAFF', '#AAFFAA'])
-
     # Plot the hyperplane
-    plt.contour(xx, yy, Z, colors=['red', 'black', 'blue'], levels=[-1, 0, 1], alpha=1,
-                linestyles=['-', '-', '-'])
+
+    plt.contour(xx, yy, Z, colors=['red', 'black', 'blue'], levels=[-1, 0, 1], alpha=1, linestyles=['-', '-', '-'])
 
     # Plot the training points
-    plt.scatter(X[:, 0], X[:, 1], c=Y, cmap=plt.cm.RdYlBu, edgecolor='black')
+    scatter = plt.scatter(X[:, 0], X[:, 1], c=Y, cmap=plt.cm.RdYlBu, edgecolor='black')
 
-    # Plot the support vectors
-    plt.scatter(classifier.support_vectors_[:, 0], classifier.support_vectors_[:, 1],
-                s=100, facecolors='none', edgecolors='k', alpha=0.5)
+    # Add legend
+    legend1 = plt.legend(*scatter.legend_elements(),
+                         loc="upper right", title="Classes")
+
 
     plt.xlabel('x1')
     plt.ylabel('x2')
