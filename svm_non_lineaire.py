@@ -127,8 +127,28 @@ def main():
     print(f'{classifier.support_vectors_=}')
     print(f'{classifier.get_params()=}')
 
-    plot_data_hyperplan(X, Y, classifier, "Graph_SVM_best_poly_non_lineaire_with_proba", show_probability=True,save=True)
-    plot_data_hyperplan(X, Y, classifier, "Graph_SVM-best_poly_non_lineaire_without_proba", show_probability=False,save=True)
+    # Récupérer les paramètres du modèle
+    support_vectors = classifier.support_vectors_.flatten()
+    dual_coefs = classifier.dual_coef_[0]  # Alpha * y
+    intercept = classifier.intercept_[0]
+    gamma = classifier._gamma  # Valeur de gamma
+
+    # Initialiser les coefficients
+    a, b, c, d = 0, 0, 0, intercept
+
+    # Calculer les contributions des vecteurs de support
+    for coef, sv in zip(dual_coefs, support_vectors):
+        # Expansion du noyau polynomial
+        d += coef * (gamma * sv + 1) ** 3
+        c += 3 * coef * (gamma * sv + 1) ** 2 * gamma
+        b += 3 * coef * (gamma * sv + 1) * gamma**2
+        a += coef * gamma**3
+
+    # Résultat
+    print(f"Les coefficients du polynôme sont : a={a}, b={b}, c={c}, d={d}")
+
+    plot_data_hyperplan(X, Y, classifier, "Graph_SVM_best_poly_non_lineaire_with_proba", show_probability=True,save=False)
+    plot_data_hyperplan(X, Y, classifier, "Graph_SVM-best_poly_non_lineaire_without_proba", show_probability=False,save=False)
 
 if __name__ == "__main__":
     main()
